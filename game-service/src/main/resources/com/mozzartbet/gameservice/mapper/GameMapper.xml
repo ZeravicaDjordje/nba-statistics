@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mozzartbet.gameservice.mapper.GameMapper">
+
+<resultMap type="com.mozzartbet.gameservice.domain.Game" id="GameResult">
+        <id column="id" property="id" />
+        <result property="createdOn" column="created_on" />
+        <result property="modifiedOn" column="modified_on"/>
+        <result property="gameUrl" column="game_url" />
+        <result property="boxUrl" column="box_url" />
+        <collection property="reboundLeaders" javaType="ArrayList" column="id" ofType="com.mozzartbet.gameservice.domain.ReboundLeaders" select="reboundSelect">
+            <id property="id" column="id" />
+            <result property="created_on" column="created_on" />
+            <result property="modifiedOn" column="modified_on"/>
+            <result property="gameUrl" column="game_url" />
+            <result property="gameId" column="game_id" />
+            <result property="player" column="player" />
+            <result property="score" column="score" />
+         </collection>
+         <collection property="assistLeaders" javaType="ArrayList" column="id" ofType="com.mozzartbet.gameservice.domain.AssistLeaders" select="assistSelect">
+            <result property="id" column="id" />
+            <result property="createdOn" column="created_on" />
+            <result property="modifiedOn" column="modified_on"/>
+            <result property="gameUrl" column="game_url" />
+            <result property="gameId" column="game_id" />
+            <result property="player" column="player" />
+            <result property="score" column="score" />
+        </collection>
+         <collection property="scoreLeaders" javaType="ArrayList" column="id" ofType="com.mozzartbet.gameservice.domain.ScoreLeaders" select="scoreSelect">
+            <result property="id" column="id" />
+            <result property="createdOn" column="created_on" />
+            <result property="modifiedOn" column="modified_on"/>
+            <result property="teamUrl" column="team_url" />
+            <result property="gameUrl" column="game_url" />
+            <result property="gameId" column="game_id" />
+            <result property="player" column="player" />
+            <result property="score" column="score" />
+        </collection>
+         <collection property="quarterValue" javaType="ArrayList" column="id" ofType="com.mozzartbet.gameservice.domain.QuarterValue" select="quarterValueSelect">
+            <result property="id" column="id" />
+            <result property="createdOn" column="created_on" />
+            <result property="modifiedOn" column="modified_on"/>
+            <result property="gameUrl" column="game_url" />
+            <result property="gameId" column="game_id" />
+            <result property="quarter" column="quarter" />
+            <result property="score" column="score" />
+            <result property="teamNumber" column="team_number" />   
+         </collection>
+         <collection property="teamStats" javaType="ArrayList" column="id" ofType="com.mozzartbet.gameservice.domain.stats.TeamStatistics" select="teamStatsSelect">
+            <result property="id" column="id" />
+            <result property="createdOn" column="created_on" />
+            <result property="modifiedOn" column="modified_on"/>
+            <result property="teamUrl" column="team_url" />
+            <result property="gameUrl" column="game_url" />
+            <result property="gameId" column="game_id" />
+            <result property="teamId" column="team_id" />
+            <result property="totalMadeThreePoints" column="totalMadeThreePoints" />   
+            <result property="totalMadeTwoPoints" column="totalMadeTwoPoints" />  
+            <result property="totalMissedTwoPoints" column="totalMissedTwoPoints" />   
+            <result property="totalMissedThreePoints" column="totalMissedThreePoints" />   
+            <result property="totalDefensiveRebound" column="totalDefensiveRebound" />   
+            <result property="totalOffensiveRebound" column="totalOffensiveRebound" />   
+            <result property="totalMadeFreeThrow" column="totalMadeFreeThrow" />   
+            <result property="totalMissedFreeThrow" column="totalMissedFreeThrow" />   
+            <result property="totalSteal" column="totalSteal" />   
+            <result property="totalAssist" column="totalAssist" />   
+            <result property="totalTurnover" column="totalTurnover" />   
+            <result property="totalBlock" column="totalBlock" />   
+            <result property="totalFoul" column="totalFoul" />   
+            <result property="totalSumRebound" column="totalSumRebound" />
+            <result property="totalTimeInPlay" column="totalTimeInPlay" />   
+            <result property="totalTurnover" column="totalTurnover" />   
+            <result property="totalRealizationTwoPoints" column="totalRealizationTwoPoints" />   
+            <result property="totalRealizationThreePoints" column="totalRealizationThreePoints" />   
+            <result property="totalRealizationFreeThrow" column="totalRealizationFreeThrow" />    
+         </collection>
+         <collection property="playerStats" javaType="ArrayList" column="id" ofType="com.mozzartbet.gameservice.domain.stats.PlayerStatistics" select="playerStatsSelect">
+            <result property="id" column="id" />
+            <result property="createdOn" column="created_on" />
+            <result property="modifiedOn" column="modified_on"/>
+            <result property="playerUrl" column="player_url" />
+            <result property="gameUrl" column="game_url" />
+            <result property="gameId" column="game_id" />
+            <result property="makesThreePoints" column="makesThreePoints" />   
+            <result property="makesTwoPoints" column="makesTwoPoints" />  
+            <result property="missesTwoPoints" column="missesTwoPoints" />   
+            <result property="missesThreePoints" column="missesThreePoints" />   
+            <result property="defensiveRebound" column="defensiveRebound" />   
+            <result property="offensiveRebound" column="offensiveRebound" />   
+            <result property="makesFreeThrow" column="makesFreeThrow" />   
+            <result property="missesFreeThrow" column="missesFreeThrow" />   
+            <result property="steal" column="steal" />   
+            <result property="assist" column="assist" />   
+            <result property="turnover" column="turnover" />   
+            <result property="block" column="block" />   
+            <result property="foul" column="foul" />   
+            <result property="sumRebound" column="sumRebound" />
+            <result property="sumMadePoints" column="sumMadePoints" />   
+            <result property="realizationTwoPoints" column="realizationTwoPoints" />   
+            <result property="realizationThreePoints" column="realizationThreePoints" />   
+            <result property="realizationFreeThrow" column="realizationFreeThrow" />   
+            <result property="timeInPlay" column="timeInPlay" />    
+         </collection> 
+</resultMap>
+
+<select id="reboundSelect" parameterType="Long" resultType="ReboundLeaders">
+    select * from rebound_leaders r where #{id} = r.game_id
+</select>
+
+<select id="scoreSelect" parameterType="Long" resultType="ScoreLeaders">
+    select * from score_leaders s where #{id} = s.game_id
+</select>
+
+<select id="assistSelect" parameterType="Long" resultType="AssistLeaders">
+    select * from assist_leaders a where #{id} = a.game_id
+</select>
+
+<select id="quarterValueSelect" parameterType="Long" resultType="QuarterValue">
+    select * from quarter_value q where #{id} = q.game_id
+</select>
+
+<select id="playerStatsSelect" parameterType="Long" resultType="PlayerStatistics">
+    select * from player_statistics ps where #{id} = ps.game_id
+</select>
+
+<select id="teamStatsSelect" parameterType="Long" resultType="TeamStatistics">
+    select * from team_statistics ts where #{id} = ts.game_id
+</select>
+
+<select id="getById" parameterType="Long" resultMap="GameResult">
+    select * from game g where #{id} = g.id
+    <!-- 
+    from 
+        game g
+            inner join 
+        rebound_leaders r
+            on #{id} = r.game_id
+            inner join 
+        score_leaders s 
+            on #{id} = s.game_id
+            inner join 
+        assist_leaders a 
+            on #{id} = a.game_id
+            inner join
+        quarter_value q
+            on #{id} = q.game_id
+            inner join
+        team_statistics ts
+            on #{id} = ts.game_id
+            inner join
+        player_statistics ps
+            on #{id} = ps.game_id
+        and g.id=#{id}  -->
+</select>
+
+<insert id="insert">
+    insert into game(created_on, game_url, box_url)
+    values(CURRENT_TIMESTAMP, #{gameUrl}, #{boxUrl})
+<selectKey keyProperty="id" resultType="Long" order="AFTER">
+            select *
+            from  game 
+            where rowid=(select max(rowid) from  game)         
+</selectKey>
+</insert>
+
+<delete id="deleteById" parameterType="Long">
+delete from game where id=#{id}
+</delete>
+
+<update id="update">
+update game set modified_on=CURRENT_TIMESTAMP, game_url=#{gameUrl}
+</update>
+
+<select id="checkForDuplicate" resultType="Game">
+SELECT g.*
+FROM game g
+JOIN (SELECT game_url, COUNT(*)
+FROM game 
+GROUP BY game_url 
+HAVING count(*) > 1 ) gg
+ON g.game_url = gg.game_url
+ORDER BY g.game_url
+</select>
+<select id="getAllData" resultType="Game">
+select * from game 
+</select>
+</mapper>

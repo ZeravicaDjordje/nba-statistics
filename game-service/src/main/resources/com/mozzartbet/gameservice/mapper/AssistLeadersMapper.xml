@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mozzartbet.gameservice.mapper.AssistLeadersMapper">
+
+<select id="count" resultType="Long">
+select count(*) from assist_leaders
+</select>
+
+<select id="getAllData" resultType="AssistLeaders">
+	select * from assist_leaders 
+</select>
+
+<select id="checkForDuplicate" resultType="AssistLeaders">
+SELECT a.*
+FROM assist_leaders a
+JOIN (SELECT game_url, COUNT(*)
+FROM assist_leaders 
+GROUP BY game_url 
+HAVING count(*) > 1 ) b
+ON a.game_url = b.game_url
+ORDER BY a.game_url
+</select>
+
+<select id="getById" parameterType="Long" resultType="AssistLeaders">
+	select * from assist_leaders where id = #{id}
+</select>
+
+<select id="allData" parameterType="AssistLeaders" resultType="AssistLeaders">
+	select * from assist_leaders
+</select>
+
+<insert id="insert" parameterType="AssistLeaders">
+
+insert into assist_leaders(game_id, created_on, player, score, game_url) values ((SELECT id FROM game WHERE game_url=#{gameUrl}), CURRENT_TIMESTAMP, #{player}, #{score}, #{gameUrl})
+
+<selectKey keyProperty="id" resultType="Long" order="AFTER">
+			select *
+			from  assist_leaders 
+			where rowid=(select max(rowid) from  assist_leaders)        	
+</selectKey>
+
+</insert>
+
+<select id="getAssistLeadersByGameUrl" resultType="AssistLeaders">
+select * from assist_leaders where game_url=#{gameUrl}
+</select>
+<update  id="update" parameterType="AssistLeaders">
+update assist_leaders set player=#{player}, score=#{score}, game_url=#{gameUrl}, modified_on=current_timestamp where id = #{id}
+</update>
+
+<delete id="deleteById" parameterType="AssistLeaders">
+delete from assist_leaders where id = #{id}
+</delete>
+
+<select id="getGameId" parameterType="AssistLeaders" resultType="Long">
+    select id from game where game.game_url = #{gameUrl}
+</select>
+
+</mapper>

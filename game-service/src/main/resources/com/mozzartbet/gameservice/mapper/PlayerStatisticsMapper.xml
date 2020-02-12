@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mozzartbet.gameservice.mapper.PlayerStatisticsMapper">
+
+<select id="count" resultType="Long">
+	select count(*) from player_statistics
+</select>
+
+<select id="getAllId" parameterType="Long" resultType="Integer">
+	select id from player_statistics
+</select>
+
+<select id="getById" parameterType="Long" resultType="PlayerStatistics">
+	select * from player_statistics where id=#{id}
+</select>
+
+<insert id="insert" parameterType="PlayerStatistics">
+
+insert into player_statistics 
+			(game_id, player_id, game_url, player_url, createdOn, makesThreePoints, 
+			makesTwoPoints, missesTwoPoints, 
+			missesThreePoints, defensiveRebound, 
+			offensiveRebound, makesFreeThrow, 
+			missesFreeThrow, steal, assist, 
+			turnover, block, foul, sumRebound, sumMadePoints, realizationTwoPoints, 
+			realizationThreePoints, realizationFreeThrow, timeInPlay)
+			values 
+			(
+			(SELECT id FROM game WHERE game_url=#{gameUrl} and ROWNUM = 1),
+			(SELECT id FROM player WHERE player_url=#{playerUrl} and ROWNUM = 1),
+			#{gameUrl}, #{playerUrl}, CURRENT_TIMESTAMP, 
+			#{makesThreePoints}, #{makesTwoPoints}, #{missesTwoPoints}, 
+			#{missesThreePoints}, #{defensiveRebound}, 
+			#{offensiveRebound}, #{makesFreeThrow}, #{missesFreeThrow}, #{steal}, #{assist},
+			#{turnover}, #{block}, #{foul}, #{sumRebound}, #{sumMadePoints}, #{realizationTwoPoints}, 
+			#{realizationThreePoints}, #{realizationFreeThrow}, #{timeInPlay})
+			<selectKey keyProperty="id" resultType="Long" order="AFTER">
+			select *
+			from player_statistics 
+			where rowid=(select max(rowid) from player_statistics)        	
+			</selectKey>
+</insert>
+
+	
+<update id="update" parameterType="PlayerStatistics">
+
+update player_statistics 
+			set
+			game_id=(SELECT id FROM game WHERE game_url=#{gameUrl}),
+			team_id=(SELECT id FROM player WHERE player_url=#{playerUrl}),
+			game_url=#{gameUrl}, 
+		    player_url=#{playerUrl}, 
+			createdOn=CURRENT_TIMESTAMP, 
+			makesThreePoints=#{makesThreePoints}, 
+			makesTwoPoints=#{makesTwoPoints}, 
+			missesTwoPoints=#{missesTwoPoints}, 
+			missesThreePoints={missesThreePoints}, 
+			defensiveRebound=#{defensiveRebound}, 
+			offensiveRebound=#{offensiveRebound}, 
+			makesFreeThrow=#{makesFreeThrow}, 
+			missesFreeThrow=#{missesFreeThrow}, 
+			steal=#{steal}, 
+			assist=#{assist}, 
+			turnover=#{turnover}, 
+			block=#{block}, 
+			foul=#{foul}, 
+			sumRebound=#{sumRebound}, 
+			sumMadePoints=#{sumMadePoints}, 
+			realizationTwoPoints=#{realizationTwoPoints}, 
+			realizationThreePoints=#{realizationThreePoints}, 
+			realizationFreeThrow=#{realizationFreeThrow}, 
+			timeInPlay=#{timeInPlay})
+			<selectKey keyProperty="id" resultType="Long" order="AFTER">
+			select *
+			from player_statistics 
+			where rowid=(select max(rowid) from player_statistics)        	
+			</selectKey>
+</update>
+
+<delete id="deleteById" parameterType="PlayerStatistics">
+delete from player_statistics where id = #{id}
+</delete>
+
+</mapper>

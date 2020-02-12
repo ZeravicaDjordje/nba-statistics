@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: game-service
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: djordje.zeravica
+Implementation-Vendor-Id: com.mozzartbet
+Build-Jdk: 1.8.0_211
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/game-service
+Created-By: Maven Integration for Eclipse
+Main-Class: com.mozzartbet.gameservice.GameServiceApplication
+

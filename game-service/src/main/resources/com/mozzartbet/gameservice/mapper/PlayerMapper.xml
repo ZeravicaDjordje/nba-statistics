@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mozzartbet.gameservice.mapper.PlayerMapper">
+
+<resultMap type="Player" id="PlayerMap">
+       <id column="id" property="id" />
+        <result column="created_on" property="createdOn" />
+        <result column="modified_on" property="modifiedOn"/>
+        <result column="team_id" property="teamId" />
+        <result column="playerName" property="playerName" jdbcType="VARCHAR"/>
+        <result column="uniformNumber" property="uniformNumber" jdbcType="VARCHAR"/>
+        <result column="player_url" property="playerUrl" jdbcType="VARCHAR"/>
+        <result column="height" property="height" jdbcType="VARCHAR"/>
+        <result column="width" property="width" jdbcType="VARCHAR"/>
+        <result column="position" property="position" jdbcType="VARCHAR"/>
+        <result column="birthDate" property="birthDate" jdbcType="VARCHAR"/>
+        <result column="yearsOfExp" property="yearsOfExp" jdbcType="VARCHAR"/>
+        <result column="college" property="college" jdbcType="VARCHAR"/>
+        <result column="team_name" property="teamName" jdbcType="VARCHAR"/>
+        <association property="team" javaType="Team" >
+          <id column="id" property="id" />
+          <result column="created_on" property="createdOn"/>
+          <result column="modified_on" property="modifiedOn"/>
+          <result column="team_url" property="teamUrl"/>
+          <result column="team_name" property="name"/>
+        </association>
+</resultMap>
+
+<select id="count" resultType="Long">
+	select count(*) from player
+</select>
+
+<select id="getAllData" resultType="Player">
+	select * from player
+</select>
+
+<select id="checkForDuplicate" resultType="Player">
+SELECT p.*
+FROM player p
+JOIN (SELECT player_url, COUNT(*)
+FROM player 
+GROUP BY player_url 
+HAVING count(*) > 1 ) pp
+ON p.player_url = pp.player_url
+ORDER BY p.player_url
+</select>
+
+<select id="getAllId" parameterType="Long" resultType="Integer">
+	select id from player
+</select>
+
+<select id="getPlayersFromTeam" parameterType="String" resultType="Player">
+select * from player where team_name=#{teamName}
+</select>
+
+<select id="checkForTeamId" resultType="Long">
+    SELECT id FROM teams t WHERE t.name=#{teamName} and ROWNUM = 1
+</select>
+
+<select id="getById" parameterType="Long" resultMap="PlayerMap">
+	select * from player inner join teams on player.team_id=teams.id and player.id=#{id}
+</select>
+
+<insert id="insert" parameterType="Player">
+insert into player (
+			team_id,
+			created_on, 
+			player_url, 
+			uniformNumber, 
+			playerName, 
+			position, 
+			height, 
+			width, 
+			birthDate, 
+			yearsOfExp, 
+			college,
+			team_name) 
+			values (
+			(SELECT id FROM teams t WHERE t.name=#{teamName} AND ROWNUM = 1),
+			CURRENT_TIMESTAMP, 
+			#{playerUrl}, 
+			#{uniformNumber}, 
+			#{playerName},
+			#{position}, 
+			#{height}, 
+			#{width}, 
+			#{birthDate}, 
+			#{yearsOfExp}, 
+			#{college}, 
+			#{teamName})
+			<selectKey keyProperty="id" resultType="Long" order="AFTER">
+			select *
+			from  player 
+			where rowid=(select max(rowid) from  player)        	
+			</selectKey>
+</insert>
+
+<update id="update" parameterType="Player">
+
+ update player set playerUrl=#{playerUrl}, 
+ modified_on=CURRENT_TIMESTAMP, 
+ uniformNumber=#{uniformNumber}, 
+ playerName=#{playerName}, 
+ position=#{position}, 
+ height=#{height}, 
+ width=#{width}, 
+ birthDate=#{birthDate}, 
+ yearsOfExp=#{yearsOfExp}, 
+ college=#{college}
+ where id = #{id}
+  
+</update>
+<delete id="deleteById" parameterType="Player">
+delete from player where id = #{id}
+</delete>
+
+  <select id="findPlayersByName" resultMap="PlayerMap">
+    select 
+            p.*
+         from
+           player p
+           inner join teams t on t.id = p.team_id
+           where
+                lower(p.playerName) like lower(#{playerName} || '%')
+                and p.team_id = #{teamId}
+          order by
+            p.id
+    
+    </select>
+    
+<select id="getPlayerByName" resultMap="PlayerMap">
+         select 
+            p.*
+         from
+            player p
+         where
+            p.playerName = #{playerName}
+</select>
+ <select id="searchPlayers" resultMap="PlayerMap">
+         select 
+            p.*
+         from
+           player p
+           inner join teams t on t.id = p.team_id
+         <where>
+            <if test="request.playerName != null">
+                lower(p.playerName) like lower(#{request.playerName} || '%')
+            </if>
+            <if test="request.teamId != null">
+                and p.team_id = #{request.teamId}
+            </if>
+             <if test="request.teamName != null">
+                and lower(t.name) like lower(#{request.teamName} || '%')
+             </if>
+          </where>
+         order by
+            p.id
+    </select>
+    
+<select id="getPlayersForTeam" resultMap="PlayerMap">
+         select 
+            p.*,
+            t.id team_id, t.name team_name, t.team_url team_url
+         from
+            player p
+                inner join teams t on t.id = p.team_id
+         where
+            t.id = #{teamId}
+         order by
+            p.id
+    </select>
+    
+<select id="lockById" parameterType="long" resultMap="PlayerMap">
+      select 
+           p.*
+        from
+            player p
+       where
+             p.id = #{id}
+       for update
+</select>
+
+<update id="updateOptimistic" parameterType="Player" flushCache="true">
+
+update player
+set
+    playerName=#{playerName}
+    playerUrl=#{playerUrl}
+where
+    id=#{id}
+    and
+    modified_on=#[expectedModifiedOn}
+</update>
+
+</mapper>

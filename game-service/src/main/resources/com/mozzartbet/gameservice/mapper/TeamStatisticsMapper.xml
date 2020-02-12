@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mozzartbet.gameservice.mapper.TeamStatisticsMapper">
+
+<select id="count" resultType="Long">
+	select count(*) from team_statistics
+</select>
+
+<select id="getAllId" parameterType="Long" resultType="Integer">
+	select id from team_statistics
+</select>
+
+<select id="getById" parameterType="Long" resultType="TeamStatistics">
+	select * from team_statistics where id=#{id}
+</select>
+
+<insert id="insert" parameterType="TeamStatistics">
+
+insert into team_statistics 
+			(
+			game_id,
+			team_id,
+			game_url,
+			team_url,
+			createdOn, 
+			totalMadeThreePoints, 
+			totalMadeTwoPoints, 
+			totalMissedTwoPoints, 
+			totalMissedThreePoints, 
+			totalDefensiveRebound, 
+			totalOffensiveRebound, 
+			totalMadeFreeThrow, 
+			totalMissedFreeThrow, 
+			totalSteal, 
+			totalAssist, 
+			totalTurnover, 
+			totalBlock, 
+			totalFoul, 
+			totalSumRebound, 
+			totalSumPoints, 
+			totalRealizationTwoPoints, 
+			totalRealizationThreePoints, 
+			totalRealizationFreeThrow, 
+			totalTimeInPlay)
+			values 
+			(
+			(SELECT id FROM game WHERE game_url=#{gameUrl}),
+			(SELECT id FROM teams WHERE team_url=#{teamUrl}),
+			#{gameUrl},
+			#{teamUrl},
+			CURRENT_TIMESTAMP,
+			#{totalMadeThreePoints}, 
+			#{totalMadeTwoPoints}, 
+			#{totalMissedTwoPoints}, 
+			#{totalMissedThreePoints}, 
+			#{totalDefensiveRebound}, 
+			#{totalOffensiveRebound}, 
+			#{totalMadeFreeThrow}, 
+			#{totalMissedFreeThrow}, 
+			#{totalSteal}, 
+			#{totalAssist}, 
+			#{totalTurnover}, 
+			#{totalBlock}, 
+			#{totalFoul}, 
+			#{totalSumRebound}, 
+			#{totalSumPoints}, 
+			#{totalRealizationTwoPoints}, 
+			#{totalRealizationThreePoints}, 
+			#{totalRealizationFreeThrow}, 
+			#{totalTimeInPlay})
+			<selectKey keyProperty="id" resultType="Long" order="AFTER">
+			select *
+			from team_statistics 
+			where rowid=(select max(rowid) from team_statistics)        	
+			</selectKey>
+</insert>
+
+<update  id="update" parameterType="TeamStatistics">
+update team_statistics set 
+			game_id=(SELECT id FROM game WHERE game_url=#{gameUrl}),
+			team_id=(SELECT id from teams where team_url=#{teamUrl}),
+			game_url=#{gameUrl},
+			team_url=#{teamUrl},
+			modifiedOn=CURRENT_TIMESTAMP,
+			totalMadeThreePoints=#{totalMadeThreePoints}, 
+			totalMadeTwoPoints=#{totalMadeTwoPoints}, 
+			totalMissedTwoPoints=#{totalMissedTwoPoints}, 
+			totalMissedThreePoints=#{totalMissedThreePoints}, 
+			totalDefensiveRebound=#{totalDefensiveRebound}, 
+			totalOffensiveRebound=#{totalOffensiveRebound}, 
+			totalMadeFreeThrow=#{totalMadeFreeThrow}, 
+			totalMissedFreeThrow=#{totalMissedFreeThrow}, 
+			totalSteal=#{totalSteal}, 
+			totalAssist=#{totalAssist}, 
+			totalTurnover=#{totalTurnover}, 
+			totalBlock=#{totalBlock}, 
+			totalFoul=#{totalFoul}, 
+			totalSumRebound=#{totalSumRebound}, 
+			totalSumPoints=#{totalSumPoints}, 
+			totalRealizationTwoPoints=#{totalRealizationTwoPoints}, 
+			totalRealizationThreePoints=#{totalRealizationThreePoints}, 
+			totalRealizationFreeThrow=#{totalRealizationFreeThrow}, 
+			totalTimeInPlay=#{totalTimeInPlay} 
+			where id=#{id} 
+</update>
+<delete id="deleteById" parameterType="TeamStatistics">
+delete from team_statistics where id = #{id}
+</delete>
+
+</mapper>

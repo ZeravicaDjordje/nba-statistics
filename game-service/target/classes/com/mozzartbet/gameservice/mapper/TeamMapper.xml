@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mozzartbet.gameservice.mapper.TeamMapper">
+
+<resultMap type="Team" id="TeamMap">
+    <id column="id" property="id" />
+    <result column="created_on" property="createdOn"/>
+    <result column="modified_on" property="modifiedOn"/>    
+    <result column="name" property="name"/>
+    <collection property="players" javaType="ArrayList" ofType="Player">
+        <result property="id" column="id" />
+        <result property="teamId" column="team_id"/>
+        <result property="createdOn" column="created_on"/>
+        <result property="modifiedOn" column="modified_on" />
+        <result property="playerUrl" column="playerUrl" />
+        <result property="uniformNumber" column="uniformNumber" jdbcType="VARCHAR"/>
+        <result property="playerName" column="playerName" jdbcType="VARCHAR"/>
+        <result property="height" column="height" jdbcType="VARCHAR"/>
+        <result property="width" column="width" jdbcType="VARCHAR"/>
+        <result property="yearsOfExp" column="yearsOfExp" jdbcType="VARCHAR"/>    
+        <result property="college" column="college" jdbcType="VARCHAR"/>  
+        <result property="teamName" column="teamName" jdbcType="VARCHAR"/>  
+    </collection>
+</resultMap>
+
+<select id="count" resultType="Long">
+
+select count(*) from teams
+
+</select>
+
+<select id="getAllData" resultType="Team">
+
+	select * from teams 
+
+</select>
+
+<select id="checkForDuplicate" resultType="Team">
+
+SELECT a.*
+FROM teams a
+JOIN (SELECT name, COUNT(*)
+FROM teams 
+GROUP BY name 
+HAVING count(*) > 1 ) b
+ON a.name = b.name
+ORDER BY a.name
+
+</select>
+
+<select id="getById" parameterType="Long"  resultMap="TeamMap">
+    
+    select * from teams inner join player on teams.id = player.team_id and teams.id=#{id}
+
+</select>
+
+<select id="allData" parameterType="Team">
+
+	select * from teams
+
+</select>
+
+<insert id="insert" parameterType="Team"> 
+
+insert into teams(name, team_url, created_on) values (#{name}, #{teamUrl}, CURRENT_TIMESTAMP)
+
+<selectKey keyProperty="id" resultType="Long" order="AFTER">
+
+			select *
+			from  teams 
+			where rowid=(select max(rowid) from  teams)        	
+
+</selectKey>
+</insert>
+
+<update  id="update" parameterType="Team">
+
+update teams set name=#{name}, team_url=#{teamUrl}, modified_on=current_timestamp where id = #{id}
+
+</update>
+
+<delete id="deleteById" parameterType="Team">
+
+delete from teams where id = #{id}
+
+</delete>
+
+<select id="findTeamByName" parameterType="String" resultMap="TeamMap">
+
+select * from teams t 
+inner join player p
+on p.team_id = t.id
+where
+lower(t.name) like lower(#{teamName} || '%')
+order by
+t.id
+
+</select>
+
+<select id="getTeamByName" parameterType="String" resultMap="TeamMap">
+
+select * from teams t 
+inner join player p
+on p.team_id = t.id
+where
+lower(t.name) like lower(#{teamName} || '%')
+order by
+t.id
+
+</select>
+<select id="searchTeamByUrl" parameterType="String" resultMap="TeamMap">
+
+select * from teams t 
+inner join player p
+on p.team_id = t.id
+where
+lower(t.team_url) like lower(#{teamUrl} || '%')
+order by
+t.id
+
+</select>
+</mapper>

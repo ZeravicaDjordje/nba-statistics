@@ -1,0 +1,229 @@
+databaseChangeLog:
+  
+  - changeSet:
+      id: teams-and-players
+      author: djordje.zeravica@mozzartbet.com
+      
+      changes:
+        - sql:
+          comment: Teams and players
+          strip-comments: true
+          sql: |
+
+            CREATE SEQUENCE teams_seq;
+            CREATE SEQUENCE player_seq;
+            
+            CREATE TABLE teams(
+               id number DEFAULT teams_seq.NEXTVAL primary key, 
+               team_url varchar2(120),
+               created_on timestamp, 
+               modified_on timestamp, 
+               name varchar(120));
+        
+            
+            CREATE TABLE player (
+               id number DEFAULT player_seq.NEXTVAL primary key,
+               team_id number,
+               created_on timestamp,
+               modified_on timestamp,
+               player_url varchar2(120),
+               uniformNumber varchar2(120),
+               playerName varchar2(120),
+               position varchar2(120),
+               height varchar2(120),
+               width varchar2(120),
+               birthDate varchar2(120),
+               yearsOfExp varchar2(120),
+               college varchar2(120),
+               team_name varchar2(120));
+           
+            alter table player add constraint fk_team_id foreign key(team_id) references teams(id) on delete cascade;
+            
+  - changeSet:
+      id: game
+      author: djordje.zeravica@mozzartbet.com
+      
+      changes:
+        - sql:
+          comment: Game table
+          strip-comments: true
+          sql: |            
+          
+                CREATE SEQUENCE game_seq;
+                
+                CREATE TABLE game (
+                    id number DEFAULT game_seq.NEXTVAL primary key,
+                    game_url varchar(120),
+                    box_url varchar(120),
+                    created_on timestamp,
+                    modified_on timestamp);
+                
+  - changeSet:
+      id: statistics
+      author: djordje.zeravica@mozzartbet.com
+      
+      changes:
+        - sql:
+          comment: Team and Player statistics
+          strip-comments: true
+          sql: |            
+            
+            CREATE SEQUENCE teams_statistics_seq;
+            CREATE SEQUENCE player_statistics_seq;
+            
+            CREATE TABLE team_statistics (
+                id number DEFAULT teams_statistics_seq.NEXTVAL primary key,
+                game_id number,
+                team_id number,
+                game_url varchar2(120),
+                team_url varchar2(120),
+                createdOn timestamp,
+                modifiedOn timestamp,
+                totalMadeThreePoints INT,
+                totalMadeTwoPoints INT,
+                totalMissedTwoPoints INT,
+                totalMissedThreePoints INT,
+                totalDefensiveRebound INT,
+                totalOffensiveRebound INT,
+                totalMadeFreeThrow INT,
+                totalMissedFreeThrow INT,
+                totalSteal INT,
+                totalAssist INT,
+                totalTurnover INT,
+                totalBlock INT,
+                totalFoul INT,
+                totalSumRebound INT,
+                totalSumPoints INT,
+                totalRealizationTwoPoints FLOAT,
+                totalRealizationThreePoints FLOAT,
+                totalRealizationFreeThrow FLOAT,
+                totalTimeInPlay varchar(120));
+                
+            alter table team_statistics add constraint fk_ts_game_id foreign key(game_id) references game(id) on delete cascade;
+            alter table team_statistics add constraint fk_ts_team_id foreign key(team_id) references teams(id) on delete cascade;
+            
+            CREATE TABLE player_statistics (
+                id number DEFAULT player_statistics_seq.NEXTVAL primary key,
+                game_id number,
+                player_id number,
+                game_url varchar2(500),
+                player_url varchar2(500),
+                createdOn timestamp,
+                modifiedOn timestamp,
+                makesThreePoints INT,
+                makesTwoPoints INT,
+                missesTwoPoints INT,
+                missesThreePoints INT,
+                defensiveRebound INT,
+                offensiveRebound INT,
+                makesFreeThrow INT,
+                missesFreeThrow INT,
+                steal INT,
+                assist INT,
+                turnover INT,
+                block INT,
+                foul INT,
+                sumRebound INT,
+                sumMadePoints INT,
+                realizationTwoPoints FLOAT,
+                realizationThreePoints FLOAT,
+                realizationFreeThrow FLOAT,
+                timeInPlay varchar(120));
+          
+            alter table player_statistics add constraint fk_ps_game_id foreign key(game_id) references game(id) on delete cascade;
+                 
+  - changeSet:
+      id: leaders and quarters
+      author: djordje.zeravica@mozzartbet.com
+      
+      changes:
+        - sql:
+          comment: Quarter and leaders value
+          strip-comments: true
+          sql: |            
+            
+            CREATE SEQUENCE quarter_values_seq;
+            CREATE SEQUENCE rebound_leaders_seq;
+            CREATE SEQUENCE assits_leaders_seq;
+            CREATE SEQUENCE score_leaders_seq;
+            
+            CREATE TABLE quarter_value(
+                id number DEFAULT quarter_values_seq.NEXTVAL primary key,
+                created_on timestamp,
+                modified_on timestamp,
+                game_id number,
+                team_url varchar2(120),
+                game_url varchar2(120),
+                quarter varchar2(120),
+                score INT,
+                team_number INT);
+            
+            alter table quarter_value add constraint fk_qv_game_id foreign key(game_id) references game(id) on delete cascade;
+            
+            CREATE TABLE rebound_leaders(
+                id number DEFAULT rebound_leaders_seq.NEXTVAL primary key,
+                game_id number,
+                created_on timestamp,
+                modified_on timestamp,
+                game_url varchar2(120),
+                player varchar2(120),
+                score INT);
+            
+            alter table rebound_leaders add constraint fk_rl_game_id foreign key(game_id) references game(id) on delete cascade;
+            
+            CREATE TABLE score_leaders(
+                id number DEFAULT score_leaders_seq.NEXTVAL primary key,
+                created_on timestamp,
+                modified_on timestamp,
+                game_id number,
+                game_url varchar2(120),
+                player varchar2(120),
+                score INT);
+                 
+            alter table score_leaders add constraint fk_sl_game_id foreign key(game_id) references game(id) on delete cascade;
+            
+            CREATE TABLE assist_leaders(
+                id number DEFAULT assits_leaders_seq.NEXTVAL primary key,
+                created_on timestamp,
+                modified_on timestamp,
+                game_id number,
+                game_url varchar2(120),
+                player varchar2(120),
+                score INT);
+                 
+            alter table assist_leaders add constraint fk_al_game_id foreign key(game_id) references game(id) on delete cascade;
+   
+  - changeSet:
+      id: events
+      author: djordje.zeravica@mozzartbet.com
+      
+      changes:
+        - sql:
+          comment: Events
+          strip-comments: true
+          sql: |        
+          
+            CREATE SEQUENCE events_seq;
+          
+            CREATE TABLE events ( 
+                id number DEFAULT events_seq.NEXTVAL primary key,
+                game_id number,
+                created_on timestamp,
+                modified_on timestamp,
+                gameDate number,
+                gameUrl varchar2(120),
+                quarter varchar2(120),
+                timeStamp varchar2(120),
+                teamOneScore varchar2(120),
+                teamTwoScore varchar2(120),
+                teamOneAction varchar2(120),
+                teamTwoAction varchar2(120),
+                scoreSoFar varchar2(120),
+                teamOne varchar2(120),
+                teamTwo varchar2(120),
+                teamOneLink varchar2(120),
+                teamTwoLink varchar2(120),
+                event varchar2(4000));
+                     
+                alter table events add constraint fk_e_game_id foreign key(game_id) references game(id) on delete cascade;
+                    

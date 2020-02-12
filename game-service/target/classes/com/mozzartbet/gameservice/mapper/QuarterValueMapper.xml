@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mozzartbet.gameservice.mapper.QuarterValueMapper">
+
+<select id="count" resultType="Long">
+select count(*) from quarter_value
+
+</select>
+
+<select id="getAllData" resultType="Team">
+	select * from quarter_value 
+</select>
+
+<select id="checkForDuplicate" resultType="Team">
+SELECT a.*
+FROM quarter_value a
+JOIN (SELECT quarter, COUNT(*)
+FROM quarter_value 
+GROUP BY quarter 
+HAVING count(*) > 1 ) b
+ON a.quarter = b.quarter
+ORDER BY a.quarter
+</select>
+
+<select id="getById" parameterType="Long" resultType="QuarterValue">
+	select * from quarter_value where id = #{id}
+</select>
+
+<select id="allData" parameterType="QuarterValue" resultType="QuarterValue">
+	select * from quarter_value
+</select>
+
+<insert id="insert" parameterType="QuarterValue">
+
+insert into quarter_value(game_id, created_on, quarter, score, game_url, team_url) values ((SELECT id FROM game WHERE game_url=#{gameUrl} and rownum = 1), current_timestamp, #{quarter}, #{score}, #{gameUrl}, #{teamUrl})
+
+<selectKey keyProperty="id" resultType="Long" order="AFTER">
+			select *
+			from  quarter_value 
+			where rowid=(select max(rowid) from  quarter_value)        	
+</selectKey>
+</insert>
+
+<update  id="update" parameterType="QuarterValue">
+update quarter_value set name=#{name}, modified_on=current_timestamp where id = #{id}
+</update>
+
+<delete id="deleteById" parameterType="QuarterValue">
+delete from quarter_value where id = #{id}
+</delete>
+
+<select id="getGameId" resultType="Long" parameterType="QuarterValue">
+    SELECT id FROM game WHERE game_url = #{gameUrl} and rownum=1
+</select>
+
+</mapper>

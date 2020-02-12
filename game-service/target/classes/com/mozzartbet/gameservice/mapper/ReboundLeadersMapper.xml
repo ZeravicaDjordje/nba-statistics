@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mozzartbet.gameservice.mapper.ReboundLeadersMapper">
+
+<select id="count" resultType="Long">
+select count(*) from rebound_leaders
+</select>
+
+<select id="getAllData" resultType="ReboundLeaders">
+	select * from rebound_leaders 
+</select>
+
+<select id="checkForDuplicate" resultType="ReboundLeaders">
+SELECT a.*
+FROM rebound_leaders a
+JOIN (SELECT quarter, COUNT(*)
+FROM rebound_leaders 
+GROUP BY quarter 
+HAVING count(*) > 1 ) b
+ON a.quarter = b.quarter
+ORDER BY a.quarter
+</select>
+
+<select id="getById" parameterType="Long" resultType="ReboundLeaders">
+	select * from rebound_leaders where id = #{id}
+</select>
+
+<select id="allData" parameterType="ReboundLeaders" resultType="ReboundLeaders">
+	select * from rebound_leaders
+</select>
+
+<select id="getGameId" resultType="Long" parameterType="ReboundLeaders">
+    SELECT id FROM game WHERE game_url = #{gameUrl} and rownum=1
+</select>
+
+<insert id="insert" parameterType="ReboundLeaders">
+
+insert into rebound_leaders(game_id, created_on, player, score, game_url) values ((SELECT id FROM game WHERE game_url=#{gameUrl}), CURRENT_TIMESTAMP, #{player}, #{score}, #{gameUrl})
+
+<selectKey keyProperty="id" resultType="Long" order="AFTER">
+			select *
+			from  rebound_leaders 
+			where rowid=(select max(rowid) from  rebound_leaders)        	
+</selectKey>
+</insert>
+
+<update  id="update" parameterType="ReboundLeaders">
+update rebound_leaders set name=#{name}, modified_on=current_timestamp where id = #{id}
+</update>
+
+<delete id="deleteById" parameterType="ReboundLeaders">
+delete from rebound_leaders where id = #{id}
+</delete>
+
+
+</mapper>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mozzartbet.gameservice.mapper.EventMapper">
+
+<resultMap type="Event" id="EventMap">
+<id property="id" column="id"/>
+<result property="createdOn" column="created_on"/>
+<result property="modifiedOn" column="modified_on"/>
+<result property="teamUrl" column="teamUrl"/>
+<result property="quarter" column="quarter"/>
+<result property="timeStamp" column="timeStamp"/>
+<result property="gameDate" column="gameDate"/>
+<result property="teamOneScore" column="teamOneScore"/>
+<result property="teamTwoScore" column="teamTwoScore"/>
+<result property="teamOneAction" column="teamOneAction"/>
+<result property="teamTwoAction" column="teamTwoAction"/>
+<result property="scoreSoFar" column="scoreSoFar"/>
+<result property="teamOne" column="teamOne"/>
+<result property="teamTwo" column="teamTwo"/>
+<result property="teamOneLink" column="teamOneLink"/>
+<result property="teamTwoLink" column="teamTwoLink"/>
+<result property="event" column="event"/>
+</resultMap>
+
+<select id="count" resultType="Long">
+	select count(*) from events
+</select>
+
+<select id="getAllId" parameterType="Long" resultType="Integer">
+	select id from events
+</select>
+
+<select id="getById" parameterType="Long" resultType="Event">
+	select * from events where id=#{id}
+</select>
+
+<insert id="insert" keyProperty="Event">
+insert into events(
+            game_id,
+			created_on,
+			gameDate,
+			gameUrl,
+			quarter, 
+			timeStamp, 
+			teamOneScore, 
+			teamTwoScore, 
+			teamOneAction, 
+			teamTwoAction, 
+			scoreSoFar, 
+			teamOne, 
+			teamTwo, 
+			teamOneLink, 
+			teamTwoLink,
+			event
+			)
+			values(
+			(SELECT id FROM game WHERE game_url=#{gameUrl} and ROWNUM = 1),
+			CURRENT_TIMESTAMP,
+			#{gameDate},
+			#{gameUrl},
+			#{quarter}, 
+			#{timeStamp},
+			#{teamOneScore}, 
+			#{teamTwoScore}, 
+			#{teamOneAction}, 
+			#{teamTwoAction}, 
+			#{scoreSoFar}, 
+			#{teamOne}, 
+			#{teamTwo}, 
+			#{teamOneLink}, 
+			#{teamTwoLink},
+			#{event}
+			)
+		 <selectKey keyProperty="id" resultType="Long" order="AFTER">
+			select *
+			from  events 
+			where rowid=(select max(rowid) from  events)        	
+			</selectKey>
+</insert>
+
+<select id="findEvents" resultType="Event">
+select * from events e
+        where
+            e.gameDate &gt;=  #{fromDate}
+            and e.gameDate &lt; #{toDate}
+        order by
+            e.gameDate 
+   </select>
+   
+<update  id="update" parameterType="Event">
+update event set 
+			id=#{id}, 
+			modifiedOn=CURRENT_TIMESTAMP, 
+			quarter=#{quarter}, 
+			timeStamp=#{timeStamp}, 
+			teamOneScore=#{teamOneScore}, 
+			teamTwoScore=#{teamTwoScore}, 
+			teamOneAction=#{teamOneAction}, 
+			teamTwoAction=#{teamTwoAction}, 
+			scoreSoFar=#{scoreSoFar}, 
+			teamOne=#{teamOne}, 
+			teamTwo=#{teamTwo}, 
+			teamOneLink=#{teamOneLink}, 
+			teamTwoLink=#{teamTwoLink},
+			event=#{event}
+</update>
+ 
+<delete id="deleteById" parameterType="Event">
+delete from events where id = #{id}
+</delete>
+
+</mapper>
